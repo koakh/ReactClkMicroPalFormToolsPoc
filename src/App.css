@@ -1,0 +1,210 @@
+html * {
+  font-size: 1em !important;
+  font-family: "Roboto", sans-serif !important;;
+}
+
+body {
+  background-color: #474756;
+}
+
+.App {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.disabled {
+  background-color: #dbdbdb;
+}
+
+.history-container {
+  border: 1px solid #888;
+  border-radius: 8px 0px 0px 8px;
+  padding: 10px;
+  height: 50vh;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 10px;
+  margin: 5px;
+}
+
+.message.user {
+  background-color: #bcdbdb;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.message.assistant {
+  background-color: #dbdbbc;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.input-text {
+  border: 1px solid #888;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.input-select {
+  border-radius: 8px;
+  padding: 10px;
+  background-color: white;
+}
+
+.input-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.toolbox {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 10px;
+}
+
+.send-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+}
+
+.send-button.disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}
+
+.textarea-editable {
+  width: 95%;
+  height: 60px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+.feedback-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: space-around;
+  justify-content: space-evenly;
+  margin-left: 20px;
+}
+
+.feedback-icons button {
+  border: none;
+  background-color: transparent;
+}
+
+.feedback-icons button.selected {
+  border: none;
+  background-color: rgba(0, 123, 255, 0.2);
+  border-radius: 4px;
+}
+
+.feedback-icons .saveBtn {
+  background-color: #28a745;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-icons .saveBtn:hover {
+  background-color: #218838;
+}
+
+.roboto-thin {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.roboto-light {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.roboto-regular {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.roboto-medium {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.roboto-bold {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.roboto-black {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.roboto-thin-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.roboto-light-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.roboto-regular-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.roboto-medium-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.roboto-bold-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.roboto-black-italic {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
