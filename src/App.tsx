@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { Tool } from './interfaces/tool.interface';
-import FormSample from './components/FormSample';
+import FormSample, { initialValues } from './components/FormSample';
+import { processForm } from './lib/processForm';
 
 function App() {
   // const [history, setHistory] = useState<{ type: 'system' | 'assistant' | 'user'; prompt: string; timestamp: number }[]>([]);
@@ -33,7 +34,7 @@ function App() {
     fetch(apiEndpointGetToolId, { headers })
       .then((response) => response.json())
       .then((data: Tool) => {
-        console.log(`data: [${JSON.stringify(data, undefined, 2)}]`);
+        // console.log(`data: [${JSON.stringify(data, undefined, 2)}]`);
         setTool(data);
       });
   }, [apiEndpointGetToolId, headers]);
@@ -41,7 +42,8 @@ function App() {
   return (
     <div className="App">
       <div className="history-container disabled">
-        <FormSample />
+        {/* <FormSample /> */}
+        {tool && processForm(tool, initialValues)}
       </div>
     </div>
   );

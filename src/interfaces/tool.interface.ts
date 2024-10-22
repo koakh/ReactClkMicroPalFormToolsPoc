@@ -12,11 +12,11 @@ export interface Prompt {
 }
 
 export interface Form {
-  elements: FormElements[];
+  elements: FormElement[];
   actions: [key: string];
 }
 
-export interface FormElements {
+export interface FormElement {
   type: string;
   key: string;
   label: string;
