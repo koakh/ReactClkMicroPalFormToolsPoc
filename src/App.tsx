@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { Tool } from './interfaces/tool.interface';
+import FormSample from './components/FormSample';
 
 function App() {
   // const [history, setHistory] = useState<{ type: 'system' | 'assistant' | 'user'; prompt: string; timestamp: number }[]>([]);
@@ -31,18 +32,16 @@ function App() {
   useEffect(() => {
     fetch(apiEndpointGetToolId, { headers })
       .then((response) => response.json())
-      .then((data: { models: any[] }) => {
+      .then((data: Tool) => {
         console.log(`data: [${JSON.stringify(data, undefined, 2)}]`);
-        // setTags(data.models);
-        // if (data?.models[0]?.name) {
-        //   setSelectedTag(data.models[0].name);
-        // }
+        setTool(data);
       });
   }, [apiEndpointGetToolId, headers]);
 
   return (
     <div className="App">
       <div className="history-container disabled">
+        <FormSample />
       </div>
     </div>
   );

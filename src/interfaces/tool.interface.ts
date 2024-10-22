@@ -1,3 +1,7 @@
+// match this interfaces with
+// /home/c3/c3-backend/src/modules/micropal/tools/interfaces/tool.interface.ts
+// /home/c3/c3-backend/src/modules/micropal/tools/interfaces/prompt.interface.ts
+
 export interface Prompt {
   key: string;
   title: string;
