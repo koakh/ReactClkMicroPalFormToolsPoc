@@ -1,19 +1,26 @@
 import React, { MouseEventHandler } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, FieldValues, UseFormRegister, useForm } from 'react-hook-form';
+import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
 
-type FormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  age: number;
+interface Props {
+  tool: Tool;
 };
 
-const initialValues: FormData = {
-  firstName: 'bill',
-  lastName: 'luo',
-  email: 'bluebill1049@hotmail.com',
-  age: -1,
-};
+// TODO: don't use any type
+// type FormData = {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   age: number;
+// };
+
+// TODO: get from response
+// export const initialValues/*: FormData*/ = {
+//   firstName: 'bill',
+//   lastName: 'luo',
+//   email: 'bluebill1049@hotmail.com',
+//   age: -1,
+// };
 
 // samples:
 // https://github.com/react-hook-form/react-hook-form/blob/master/examples/V7/basicValidation.tsx
@@ -27,16 +34,50 @@ const initialValues: FormData = {
 // One of the key concepts in React Hook Form is to register your component into the hook.
 // This will make its value available for both the form validation and submission.
 
-const NewComponent: React.FC = () => {
+const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   // const { register, setValue, handleSubmit, formState: { errors } } = useForm<FormData>();
   // const onSubmit = handleSubmit((data: any) => console.log(data));
+  // console.log(`props: [${JSON.stringify(tool.form?.elements, undefined, 2)}]`);
   const {
     register,
     setValue,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm();
+
+  // inner function
+  function renderFormElements<T extends FieldValues>(
+    dynamicForm: DynamicForm,
+    // initialValues: FormData,
+    register: any,/*: UseFormRegister<T>*/
+    errors: any,/*: FieldErrors<T>*/
+  ): React.ReactNode {
+    // dynamicForm.elements.forEach((e: DynamicFormElement) => {
+    return dynamicForm.elements.map((e: DynamicFormElement) => {
+      return (
+        // console.log(`key, ${e.key}, type: ${e.type}`);
+        <>
+          <div className='form-element'>
+            <label htmlFor="lastName">{e.type}:{e.label}</label>
+            <input
+              className={errors.lastName && 'input-element-error'}
+            // TODO: e.defaultValue
+              // defaultValue={initialValues.get(e.key) || ''}
+              defaultValue={e.defaultValue}
+              placeholder={e.placeHolder}
+            {...register(e.key, {
+              validate: (value: string | number | boolean) => value != '',
+            })}
+            />
+          </div>
+          {/* TODO: how to manage error message */}
+          {errors.lastName && <p className='form-error'>Your last name is less than 3 characters</p>}
+          <pre>{errors.lastName}</pre>
+        </>
+      );
+    });
+  };
 
   // TODO: any
   const onSubmit = (data: any, e: any) => {
@@ -45,13 +86,20 @@ const NewComponent: React.FC = () => {
     console.log(JSON.stringify(data));
   };
 
+  const initialValues = {
+    firstName: 'bill',
+    lastName: 'luo',
+    email: 'bluebill1049@hotmail.com',
+    age: -1,
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {tool?.form && renderFormElements(tool.form/*, initialValues*/, register, errors)}
       {/* firstName */}
-      <div className='form-element'>
+      {/* <div className='form-element'>
         <label htmlFor="firstName">First Name</label>
         <input
-          className={errors.firstName && 'input-element-error'}
           defaultValue={initialValues.firstName}
           placeholder="bill"
           {...register('firstName', {
@@ -59,10 +107,10 @@ const NewComponent: React.FC = () => {
           })}
         />
       </div>
-      {errors.firstName && <p className='form-error'>Your name can't be bill</p>}
+      {errors.firstName && <p className='form-error'>Your name can't be bill</p>} */}
 
       {/* lastName */}
-      <div className='form-element'>
+      {/* <div className='form-element'>
         <label htmlFor="lastName">Last Name</label>
         <input
           defaultValue={initialValues.lastName}
@@ -72,10 +120,10 @@ const NewComponent: React.FC = () => {
           })}
         />
       </div>
-      {errors.lastName && <p className='form-error'>Your last name is less than 3 characters</p>}
+      {errors.lastName && <p className='form-error'>Your last name is less than 3 characters</p>} */}
 
       {/* email */}
-      <div className='form-element'>
+      {/* <div className='form-element'>
         <label htmlFor="email">Email</label>
         <input
           defaultValue={initialValues.email}
@@ -83,10 +131,10 @@ const NewComponent: React.FC = () => {
           type="email"
           {...register('email')}
         />
-      </div>
+      </div> */}
 
       {/* age */}
-      <div className='form-element'>
+      {/* <div className='form-element'>
         <label htmlFor="age">Age</label>
         <input
           defaultValue={initialValues.age}
@@ -109,7 +157,7 @@ const NewComponent: React.FC = () => {
         errors.age && errors.age.type === 'lessThanHundred' && (
           <p className='form-error'>Your age should be less than 200</p>
         )
-      }
+      } */}
 
       <button
         className='form-button'
@@ -138,4 +186,4 @@ const NewComponent: React.FC = () => {
   );
 };
 
-export default NewComponent;
+export default DynamicFormComponent;

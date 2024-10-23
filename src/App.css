@@ -225,5 +225,21 @@ input[type="submit"] {
 
 .form-error {
   /* background-color: blue; */
-  color: red;
+  color: #ff0000;
 }
+
+/* .input-element-error {
+  border-color: #ff0000;
+}
+
+.input-element-error:focus {
+  border-color: green;
+}
+
+.input-element-error:active {
+  border-color: #ff4444;
+}
+
+.input-element-error:hover {
+  border-color: #ff8888;
+} */

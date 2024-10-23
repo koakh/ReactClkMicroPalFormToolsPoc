@@ -11,12 +11,12 @@ export interface Prompt {
   i18n: { [key: string]: { prompts: string[] } },
 }
 
-export interface Form {
-  elements: FormElement[];
+export interface DynamicForm {
+  elements: DynamicFormElement[];
   actions: [key: string];
 }
 
-export interface FormElement {
+export interface DynamicFormElement {
   type: string;
   key: string;
   label: string;
@@ -30,5 +30,5 @@ export interface FormElement {
 }
 
 export interface Tool extends Prompt {
-  form?: Form;
+  form?: DynamicForm;
 }
