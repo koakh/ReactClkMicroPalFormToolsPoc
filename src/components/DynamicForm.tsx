@@ -1,6 +1,7 @@
 import React, { MouseEventHandler } from 'react';
-import { FieldValues, Validate, useForm } from 'react-hook-form';
+import { FieldErrors, FieldValues, Validate, useForm } from 'react-hook-form';
 import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
+import { ValidationRule, parseValidationRules } from '../lib/validation';
 
 interface Props {
   tool: Tool;
@@ -31,8 +32,66 @@ interface Props {
 // One of the key concepts in React Hook Form is to register your component into the hook.
 // This will make its value available for both the form validation and submission.
 
-const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
+// TODO: move to a standalone utils file
+// TODO: any?
+const getValidateObject = (e: DynamicFormElement): any => {
+  // NOTE: we don't need this because we always work with array of ValidationRule objects, this will contain the required errorMessage 
+  // if (typeof e.validation === 'string') {
+  //   console.log(`key: ${e.key}, validation string: ${JSON.stringify(e.validation)}`);
+  //   return createFunctionFromString(e.validation);
+  // }
+  if (Array.isArray(e.validation)) {
+    let result: { [key: string]: Function | string } = {};
+    const validationRules = parseValidationRules(e.validation);
+    // console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
+    validationRules.forEach((v: ValidationRule) => {
+      const keys = Object.keys(v);
+      const validationFunctionKey = keys[0];
+      const validationFunction = v[keys[0]];
+      const errorMessageValue = v[keys[1]];
+      if (validationFunctionKey && errorMessageValue) {
+        // assign validation to result
+        result[validationFunctionKey] = validationFunction;
+      }
+    })
+    // sample return
+    // return {
+    //   positiveNumber: (value: any) => parseFloat(value) > 0,
+    //   lessThanHundred: (value: any) => parseFloat(value) < 200,
+    // }
+    return result;
+  }
+};
 
+// TODO: move to a standalone utils file
+const getValidateErrorNodes = (e: DynamicFormElement, errors: FieldErrors<FieldValues>): React.ReactNode => {
+  if (Array.isArray(e.validation)) {
+    let result: Array<React.ReactNode> = [];
+    const validationRules = parseValidationRules(e.validation);
+    // console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
+    validationRules.forEach((v: ValidationRule) => {
+      const keys = Object.keys(v);
+      const validationFunctionKey = keys[0];
+      const errorMessageKey = 'errorMessage';
+      const errorMessageValue = v[keys[1]];
+      if (validationFunctionKey && errorMessageValue) {
+        // assign validation to result
+        // result.push(<div className='form-error'>{e.key}</div>);
+        if (errors[e.key] && (errors[e.key] as any).type === validationFunctionKey)
+          // TODO: as string
+          result.push(<p className='form-error'>{errorMessageValue as string}</p>);
+      }
+    })
+    // sample return
+    // return {
+    //   positiveNumber: (value: any) => parseFloat(value) > 0,
+    //   lessThanHundred: (value: any) => parseFloat(value) < 200,
+    // }
+    return result;
+  }
+};
+
+const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   const {
     register,
     setValue,
@@ -50,19 +109,7 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   ): React.ReactNode {
     // dynamicForm.elements.forEach((e: DynamicFormElement) => {
     return dynamicForm.elements.map((e: DynamicFormElement) => {
-      const validateObject = (e: DynamicFormElement): any => {
-        if (typeof e.validation  === 'string') {
-          console.log(`key: ${e.key}, validation string: ${JSON.stringify(e.validation)}`);
-        }
-        if (Array.isArray( e.validation)  ) {
-          console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
-        } 
-        // OK
-        return {
-          positiveNumber: (value: any) => parseFloat(value) > 0,
-          lessThanHundred: (value: any) => parseFloat(value) < 200,
-        }
-      };
+
 
       return (
         // console.log(`key, ${e.key}, type: ${e.type}`);
@@ -84,19 +131,21 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
                 //   positiveNumber: (value) => parseFloat(value) > 0,
                 //   lessThanHundred: (value) => parseFloat(value) < 200,
                 // },  
-                validate: e.validation ? validateObject(e) : undefined,
+                validate: e.validation ? getValidateObject(e) : undefined,
               })}
             />
           </div>
           {/* TODO: how to manage error message */}
-          {errors[e.key] && <p className='form-error'>Your last name is less than 3 characters</p>}
+          {/* {errors[e.key] && <p className='form-error'>Your last name is less than 3 characters</p>} */}
           {/* TODO: get this elements from getErrorElements fn */}
-          {errors[e.key] && (errors[e.key] as any).type === 'positiveNumber' && (
+          {/* {errors[e.key] && (errors[e.key] as any).type === 'positiveNumber' && (
             <p className='form-error'>Your age is invalid</p>
-          )}
-          {errors[e.key] && (errors[e.key] as any).type === 'lessThanHundred' && (
+          )} */}
+          {/* TODO: get this elements from getErrorElements fn */}
+          {/* {errors[e.key] && (errors[e.key] as any).type === 'lessThanHundred' && (
             <p className='form-error'>Your age should be less than 200</p>
-          )}
+          )} */}
+          {getValidateErrorNodes(e, errors)}
         </div>
       );
     });
@@ -106,7 +155,7 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   const onSubmit = (data: any, e: any) => {
     // reset after form submit
     e.target.reset();
-    console.log(JSON.stringify(data));
+    console.log(`onSubmit data: ${JSON.stringify(data)}`);
   };
 
   const initialValues = {
@@ -210,3 +259,7 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
 };
 
 export default DynamicFormComponent;
+
+function createFunctionFromString(validation: string): any {
+  throw new Error('Function not implemented.');
+}
