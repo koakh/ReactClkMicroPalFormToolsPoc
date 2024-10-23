@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from 'react';
-import { FieldErrors, FieldValues, UseFormRegister, useForm } from 'react-hook-form';
+import { FieldValues, Validate, useForm } from 'react-hook-form';
 import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
 
 interface Props {
@@ -8,10 +8,7 @@ interface Props {
 
 // TODO: don't use any type
 // type FormData = {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   age: number;
+//   subject: string;
 // };
 
 // TODO: get from response
@@ -35,9 +32,7 @@ interface Props {
 // This will make its value available for both the form validation and submission.
 
 const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
-  // const { register, setValue, handleSubmit, formState: { errors } } = useForm<FormData>();
-  // const onSubmit = handleSubmit((data: any) => console.log(data));
-  // console.log(`props: [${JSON.stringify(tool.form?.elements, undefined, 2)}]`);
+
   const {
     register,
     setValue,
@@ -50,31 +45,59 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   function renderFormElements<T extends FieldValues>(
     dynamicForm: DynamicForm,
     // initialValues: FormData,
-    register: any,/*: UseFormRegister<T>*/
-    errors: any,/*: FieldErrors<T>*/
+    // register: any,/*: UseFormRegister<T>*/
+    // errors: any,/*FieldErrors<T>*/
   ): React.ReactNode {
     // dynamicForm.elements.forEach((e: DynamicFormElement) => {
     return dynamicForm.elements.map((e: DynamicFormElement) => {
+      const validateObject = (e: DynamicFormElement): any => {
+        if (typeof e.validation  === 'string') {
+          console.log(`key: ${e.key}, validation string: ${JSON.stringify(e.validation)}`);
+        }
+        if (Array.isArray( e.validation)  ) {
+          console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
+        } 
+        // OK
+        return {
+          positiveNumber: (value: any) => parseFloat(value) > 0,
+          lessThanHundred: (value: any) => parseFloat(value) < 200,
+        }
+      };
+
       return (
         // console.log(`key, ${e.key}, type: ${e.type}`);
-        <>
+        <div key={e.key}>
           <div className='form-element'>
             <label htmlFor="lastName">{e.type}:{e.label}</label>
             <input
               className={errors.lastName && 'input-element-error'}
-            // TODO: e.defaultValue
-              // defaultValue={initialValues.get(e.key) || ''}
-              defaultValue={e.defaultValue}
+              // defaultValue={e.defaultValue}
               placeholder={e.placeHolder}
-            {...register(e.key, {
-              validate: (value: string | number | boolean) => value != '',
-            })}
+              {...register(e.key, {
+                // validate: (value: string | number | boolean) => value != '',                
+                // validate: (value: any) => {
+                //   const result = validateObject(value);
+                //   return result;
+                // },
+                // OK
+                // validate: {
+                //   positiveNumber: (value) => parseFloat(value) > 0,
+                //   lessThanHundred: (value) => parseFloat(value) < 200,
+                // },  
+                validate: e.validation ? validateObject(e) : undefined,
+              })}
             />
           </div>
           {/* TODO: how to manage error message */}
-          {errors.lastName && <p className='form-error'>Your last name is less than 3 characters</p>}
-          <pre>{errors.lastName}</pre>
-        </>
+          {errors[e.key] && <p className='form-error'>Your last name is less than 3 characters</p>}
+          {/* TODO: get this elements from getErrorElements fn */}
+          {errors[e.key] && (errors[e.key] as any).type === 'positiveNumber' && (
+            <p className='form-error'>Your age is invalid</p>
+          )}
+          {errors[e.key] && (errors[e.key] as any).type === 'lessThanHundred' && (
+            <p className='form-error'>Your age should be less than 200</p>
+          )}
+        </div>
       );
     });
   };
@@ -95,7 +118,7 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {tool?.form && renderFormElements(tool.form/*, initialValues*/, register, errors)}
+      {tool?.form && renderFormElements(tool.form/*, initialValues, register, errors*/)}
       {/* firstName */}
       {/* <div className='form-element'>
         <label htmlFor="firstName">First Name</label>

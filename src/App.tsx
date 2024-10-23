@@ -42,8 +42,8 @@ function App() {
   return (
     <div className="App">
       <div className="history-container disabled">
-        <FormSample />
-        {/* {tool && <DynamicForm tool={tool} />} */}
+        {/* <FormSample /> */}
+        {tool && <DynamicForm tool={tool} />}
         {/* {tool && processForm(tool, initialValues)} */}
       </div>
     </div>
