@@ -115,19 +115,22 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     // dynamicForm.elements.forEach((e: DynamicFormElement) => {
     // const watchFields: { [key: string]: any } = {};
     return dynamicForm.elements.map((e: DynamicFormElement) => {
-      console.log(`key, ${e.key}, type: ${e.type}, visible: ${e.visible}`);
-// if (e.visible) {
-//   watchFields[e.key] = watch(e.key);
-//   const isVisible = createFunctionFromString(e.visible);
-//   console.log(`isVisible: ${isVisible}`);
-// }
+      // console.log(`key, ${e.key}, type: ${e.type}, visible: ${e.visible}`);
 
-      // watch all fields
-      const field = 'grade';
-      watchFields.current[e.key] = watch(String(field));
-      console.log(`watchFields: [${JSON.stringify(watchFields.current, undefined, 2)}]`);
+      // watch all fields, inject defaultValue
+      watchFields.current[e.key] = watch(String(e.key), e.defaultValue);
+      // console.log(`watchFields: [${JSON.stringify(watchFields.current, undefined, 2)}]`);
 
-      return (
+      let showElement = true;
+      if (e.visible) {
+        const isVisible = createFunctionFromString(e.visible);
+        if (isVisible) {
+          showElement = isVisible(watchFields.current);
+        }
+        // console.log(`isVisible: ${isVisible}`);
+      }
+
+      return showElement && (
         <div key={e.key}>
           <p>{`watchFields[${e.key}]: ${watchFields.current[e.key]}`}</p>
           <div className='form-element'>
