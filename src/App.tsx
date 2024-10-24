@@ -31,7 +31,7 @@ function App() {
     return () => {
       isMounted = false;
     };
-  }, [apiEndpointGetToolId, headers]);
+  }, []);
 
   return (
     <div className="App">
