@@ -2,6 +2,8 @@
 // /home/c3/c3-backend/src/modules/micropal/tools/interfaces/tool.interface.ts
 // /home/c3/c3-backend/src/modules/micropal/tools/interfaces/prompt.interface.ts
 
+import { DynamicFormElementType } from "../lib/dynamic-form";
+
 export interface Prompt {
   key: string;
   title: string;
@@ -17,11 +19,12 @@ export interface DynamicForm {
 }
 
 export interface DynamicFormElement {
-  type: string;
+  // type: string;
+  type: DynamicFormElementType;  
   key: string;
   label: string;
   placeHolder?: string;
-  help?: string;
+  helperText?: string;
   defaultValue: string | number | readonly string[] | undefined;
   options?: string | string[];
   required?: string;

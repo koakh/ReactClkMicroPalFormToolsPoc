@@ -1,80 +1,11 @@
 import React, { MouseEventHandler, useRef } from 'react';
-import { FieldErrors, FieldValues, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
-import { ValidationRule, createFunctionFromString, parseValidationRules } from '../lib/main';
+import { generateElement, getValidateErrorNodes } from '../lib/dynamic-form';
+import { createFunctionFromString } from '../lib/main';
 
 interface Props {
   tool: Tool;
-};
-
-/**
- * get react hook form validation object
- * @param e 
- * @returns react hook form validation object
- */
-const getValidateObject = (e: DynamicFormElement): any => {
-  // NOTE: we don't need this because we always work with array of ValidationRule objects, this will contain the required errorMessage 
-  // if (typeof e.validation === 'string') {
-  //   console.log(`key: ${e.key}, validation string: ${JSON.stringify(e.validation)}`);
-  //   return createFunctionFromString(e.validation);
-  // }
-  let result: { [key: string]: Function | string } = {};
-  if (Array.isArray(e.validation)) {
-    const validationRules = parseValidationRules(e.validation);
-    // console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
-    validationRules.forEach((v: ValidationRule) => {
-      const keys = Object.keys(v);
-      const validationFunctionKey = keys[0];
-      const validationFunction = v[keys[0]];
-      const errorMessageValue = v[keys[1]];
-      if (validationFunctionKey && errorMessageValue) {
-        // assign validation to result
-        result[validationFunctionKey] = validationFunction;
-      }
-    })
-    // sample return
-    // return {
-    //   positiveNumber: (value: any) => parseFloat(value) > 0,
-    //   lessThanHundred: (value: any) => parseFloat(value) < 200,
-    // }
-  }
-  return result;
-};
-
-/**
- * get react element nodes from errorMessages and validation
- * @param e 
- * @param errors 
- * @returns rendered ReactNode
- */
-const getValidateErrorNodes = (e: DynamicFormElement, errors: FieldErrors<FieldValues>): React.ReactNode => {
-  if (Array.isArray(e.validation)) {
-    let result: Array<React.ReactNode> = [];
-    const validationRules = parseValidationRules(e.validation);
-    // console.log(`key: ${e.key}, validation array: ${JSON.stringify(e.validation)}`);
-    validationRules.forEach((v: ValidationRule) => {
-      const keys = Object.keys(v);
-      const validationFunctionKey = keys[0];
-      const errorMessageValue = v[keys[1]];
-      if (validationFunctionKey && errorMessageValue) {
-        // assign validation to result
-        // result.push(<div className='form-error'>{e.key}</div>);
-        if (errors[e.key] && (errors[e.key] as any).type === validationFunctionKey)
-          result.push(<p key={e.key} className='form-error'>{errorMessageValue as string}</p>);
-      }
-    })
-    // {
-    //   errors.age && errors.age.type === 'positiveNumber' && (
-    //     <p className='form-error'>Your age is invalid</p>
-    //   )
-    // }
-    // {
-    //   errors.age && errors.age.type === 'lessThanHundred' && (
-    //     <p className='form-error'>Your age should be less than 200</p>
-    //   )
-    // }
-    return result;
-  }
 };
 
 const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
@@ -107,8 +38,9 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
 
       return showElement && (
         <div key={e.key}>
-          <p>{`watcher[${e.key}]: ${watcher.current[e.key]}`}</p>
-          <div className='form-element'>
+          {/* showWatcher */}
+          {/* <p>{`watcher[${e.key}]: ${watcher.current[e.key]}`}</p> */}
+          {/* <div className='form-element'>
             <label htmlFor="lastName">{e.type}:{e.label}</label>
             <input
               className={errors.lastName && 'input-element-error'}
@@ -123,7 +55,8 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
                 validate: e.validation ? getValidateObject(e) : undefined,
               })}
             />
-          </div>
+          </div> */}
+          {generateElement(e, register, errors)}
           {/* validation elements */}
           {getValidateErrorNodes(e, errors)}
         </div>
