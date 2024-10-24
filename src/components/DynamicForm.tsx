@@ -79,7 +79,7 @@ const getValidateErrorNodes = (e: DynamicFormElement, errors: FieldErrors<FieldV
         // result.push(<div className='form-error'>{e.key}</div>);
         if (errors[e.key] && (errors[e.key] as any).type === validationFunctionKey)
           // TODO: as string
-          result.push(<p className='form-error'>{errorMessageValue as string}</p>);
+          result.push(<p key={e.key} className='form-error'>{errorMessageValue as string}</p>);
       }
     })
     // sample return
