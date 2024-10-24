@@ -1,7 +1,7 @@
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, useRef } from 'react';
 import { FieldErrors, FieldValues, Validate, useForm } from 'react-hook-form';
 import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
-import { ValidationRule, parseValidationRules } from '../lib/validation';
+import { ValidationRule, createFunctionFromString, parseValidationRules } from '../lib/main';
 
 interface Props {
   tool: Tool;
@@ -21,9 +21,10 @@ interface Props {
 // };
 
 // samples:
+// https://github.com/react-hook-form/react-hook-form/tree/master/examples/V7
 // https://github.com/react-hook-form/react-hook-form/blob/master/examples/V7/basicValidation.tsx
 // https://github.com/react-hook-form/react-hook-form/blob/master/examples/V7/customValidation.tsx
-// https://github.com/react-hook-form/react-hook-form/tree/master/examples/V7
+// https://github.com/react-hook-form/react-hook-form/blob/master/examples/V7/conditionalFields.tsx
 
 // Typescript Support
 // https://react-hook-form.com/ts
@@ -97,8 +98,12 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     setValue,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
+
+  // const watchFields: { [key: string]: any } = {};
+  const watchFields = useRef<{ [key: string]: any }>({});
 
   // inner function
   function renderFormElements<T extends FieldValues>(
@@ -108,17 +113,29 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     // errors: any,/*FieldErrors<T>*/
   ): React.ReactNode {
     // dynamicForm.elements.forEach((e: DynamicFormElement) => {
+    // const watchFields: { [key: string]: any } = {};
     return dynamicForm.elements.map((e: DynamicFormElement) => {
+      console.log(`key, ${e.key}, type: ${e.type}, visible: ${e.visible}`);
+// if (e.visible) {
+//   watchFields[e.key] = watch(e.key);
+//   const isVisible = createFunctionFromString(e.visible);
+//   console.log(`isVisible: ${isVisible}`);
+// }
 
+      // watch all fields
+      const field = 'grade';
+      watchFields.current[e.key] = watch(String(field));
+      console.log(`watchFields: [${JSON.stringify(watchFields.current, undefined, 2)}]`);
 
       return (
-        // console.log(`key, ${e.key}, type: ${e.type}`);
         <div key={e.key}>
+          <p>{`watchFields[${e.key}]: ${watchFields.current[e.key]}`}</p>
           <div className='form-element'>
             <label htmlFor="lastName">{e.type}:{e.label}</label>
             <input
               className={errors.lastName && 'input-element-error'}
-              // defaultValue={e.defaultValue}
+              // TODO:
+              defaultValue={e.defaultValue}
               placeholder={e.placeHolder}
               {...register(e.key, {
                 // validate: (value: string | number | boolean) => value != '',                
@@ -158,12 +175,12 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     console.log(`onSubmit data: ${JSON.stringify(data)}`);
   };
 
-  const initialValues = {
-    firstName: 'bill',
-    lastName: 'luo',
-    email: 'bluebill1049@hotmail.com',
-    age: -1,
-  };
+  // const initialValues = {
+  //   firstName: 'bill',
+  //   lastName: 'luo',
+  //   email: 'bluebill1049@hotmail.com',
+  //   age: -1,
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -259,7 +276,3 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
 };
 
 export default DynamicFormComponent;
-
-function createFunctionFromString(validation: string): any {
-  throw new Error('Function not implemented.');
-}

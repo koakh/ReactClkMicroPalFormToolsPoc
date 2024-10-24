@@ -22,7 +22,7 @@ export interface DynamicFormElement {
   label: string;
   placeHolder?: string;
   help?: string;
-  defaultValue: string | boolean | number;
+  defaultValue: string | number | readonly string[] | undefined;
   options?: string | string[];
   required?: string;
   validation?: string;

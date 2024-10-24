@@ -39,7 +39,6 @@ function App() {
         <pre>{`count: ${count.current}`}</pre>
         {/* <FormSample /> */}
         {tool && <DynamicForm tool={tool} />}
-        {/* {tool && processForm(tool, initialValues)} */}
       </div>
     </div>
   );
