@@ -13,7 +13,7 @@ export interface Prompt {
 
 export interface DynamicForm {
   elements: DynamicFormElement[];
-  actions: [key: string];
+  actions: { [key: string]: any };
 }
 
 export interface DynamicFormElement {

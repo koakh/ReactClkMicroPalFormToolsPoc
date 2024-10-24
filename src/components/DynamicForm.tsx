@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, useRef } from 'react';
-import { FieldErrors, FieldValues, Validate, useForm } from 'react-hook-form';
+import { FieldErrors, FieldValues, useForm } from 'react-hook-form';
 import { DynamicForm, DynamicFormElement, Tool } from '../interfaces/tool.interface';
 import { ValidationRule, createFunctionFromString, parseValidationRules } from '../lib/main';
 
@@ -102,8 +102,8 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     formState: { errors },
   } = useForm();
 
-  // const watchFields: { [key: string]: any } = {};
-  const watchFields = useRef<{ [key: string]: any }>({});
+  // const watcher: { [key: string]: any } = {};
+  const watcher = useRef<{ [key: string]: any }>({});
 
   // inner function
   function renderFormElements<T extends FieldValues>(
@@ -113,26 +113,26 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
     // errors: any,/*FieldErrors<T>*/
   ): React.ReactNode {
     // dynamicForm.elements.forEach((e: DynamicFormElement) => {
-    // const watchFields: { [key: string]: any } = {};
+    // const watcher: { [key: string]: any } = {};
     return dynamicForm.elements.map((e: DynamicFormElement) => {
       // console.log(`key, ${e.key}, type: ${e.type}, visible: ${e.visible}`);
 
       // watch all fields, inject defaultValue
-      watchFields.current[e.key] = watch(String(e.key), e.defaultValue);
-      // console.log(`watchFields: [${JSON.stringify(watchFields.current, undefined, 2)}]`);
+      watcher.current[e.key] = watch(String(e.key), e.defaultValue);
+      // console.log(`watcher: [${JSON.stringify(watcher.current, undefined, 2)}]`);
 
       let showElement = true;
       if (e.visible) {
         const isVisible = createFunctionFromString(e.visible);
         if (isVisible) {
-          showElement = isVisible(watchFields.current);
+          showElement = isVisible(watcher.current);
         }
         // console.log(`isVisible: ${isVisible}`);
       }
 
       return showElement && (
         <div key={e.key}>
-          <p>{`watchFields[${e.key}]: ${watchFields.current[e.key]}`}</p>
+          <p>{`watcher[${e.key}]: ${watcher.current[e.key]}`}</p>
           <div className='form-element'>
             <label htmlFor="lastName">{e.type}:{e.label}</label>
             <input
@@ -172,21 +172,27 @@ const DynamicFormComponent: React.FC<Props> = ({ tool }: Props) => {
   };
 
   // TODO: any
-  const onSubmit = (data: any, e: any) => {
+  const onSubmit = (data: any, e: any, tool: Tool) => {
     // reset after form submit
     e.target.reset();
-    console.log(`onSubmit data: ${JSON.stringify(data)}`);
+    // console.log(`onSubmit data: ${JSON.stringify(data)}`);
+
+    let payload = data;
+    if (tool.form?.actions['submit'] && tool.form?.actions['submit']['getPayload']) {
+      // console.log(`tool.form?.actions['submit']['getPayload']: [${tool.form?.actions['submit']['getPayload']}]`);
+      const getPayload = createFunctionFromString(tool.form?.actions['submit']['getPayload']);
+      if (getPayload) {
+        // override default payload
+        payload = getPayload(data);
+        console.log(`payload: [${JSON.stringify(payload, undefined, 2)}]`);
+      }
+    }
+    console.log(`onSubmit payload: ${JSON.stringify(payload)}`);
   };
 
-  // const initialValues = {
-  //   firstName: 'bill',
-  //   lastName: 'luo',
-  //   email: 'bluebill1049@hotmail.com',
-  //   age: -1,
-  // };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    // <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit((data, e) => onSubmit(data, e, tool))}>
       {tool?.form && renderFormElements(tool.form/*, initialValues, register, errors*/)}
       {/* firstName */}
       {/* <div className='form-element'>
